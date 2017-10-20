@@ -15,22 +15,49 @@ if CommandLine.arguments.count < 3 {
 
 let fm = FileManager.default
 
-let url = URL.init(fileURLWithPath: CommandLine.arguments[2], isDirectory: false)
+var isDir : ObjCBool = false
 
-if CommandLine.arguments[1] == "offload" {
-  do {
-    try fm.evictUbiquitousItem(at: url)
-    print("file offloaded.")
-  } catch {
-    print("failed: \(error)")
+if fm.fileExists(atPath:CommandLine.arguments[2], isDirectory:&isDir) {
+  if isDir.boolValue == true {
+    let url = URL.init(fileURLWithPath: CommandLine.arguments[2], isDirectory: true)
+    
+    if CommandLine.arguments[1] == "offload" {
+        do {
+            try fm.evictUbiquitousItem(at: url)
+            print("path offloaded.")
+        } catch {
+            print("failed: \(error)")
+        }
+    }
+    
+    if CommandLine.arguments[1] == "restore" {
+        do {
+            try fm.startDownloadingUbiquitousItem(at: url)
+            print("path restored.")
+        } catch {
+            print("failed: \(error)")
+        }
+    }
+  } else {
+    let url = URL.init(fileURLWithPath: CommandLine.arguments[2], isDirectory: false)
+    
+    if CommandLine.arguments[1] == "offload" {
+        do {
+            try fm.evictUbiquitousItem(at: url)
+            print("file offloaded.")
+        } catch {
+            print("failed: \(error)")
+        }
+    }
+    
+    if CommandLine.arguments[1] == "restore" {
+        do {
+            try fm.startDownloadingUbiquitousItem(at: url)
+            print("file restored.")
+        } catch {
+            print("failed: \(error)")
+        }
+    }
   }
 }
 
-if CommandLine.arguments[1] == "restore" {
-    do {
-        try fm.startDownloadingUbiquitousItem(at: url)
-        print("file restored.")
-    } catch {
-        print("failed: \(error)")
-    }
-}
